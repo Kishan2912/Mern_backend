@@ -1,11 +1,21 @@
-const router = require("express").Router();
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
 const User = require('../models/user')
+const dotenv = require('dotenv');
+dotenv.config();
 
-router.post("/register", async (req, res)=> {
+const register = async (req, res) => {
     console.log(req.body)
     try {
+        const user = await User.findOne({
+            email: req.body.email,
+        })
+
+        console.log(user,"User")
+
+        if(user){
+            res.json({ status: 'error', error: 'This email id is used, please enter another email-id' })
+        }
         const newPassword = await bcrypt.hash(req.body.password, 10)
         await User.create({
             name: req.body.name,
@@ -14,19 +24,18 @@ router.post("/register", async (req, res)=> {
         })
         res.json({ status: 'ok' })
     } catch (err) {
-        res.json({ status: 'error', error: 'Duplicate email' })
+        res.json({ status: 'error', error: 'Something went wrong' })
     }
-});
+}
 
-
-router.post("/login", async (req, res)=> {
+const login = async (req, res) => {
     console.log("Login Request")
 
     const user = await User.findOne({
         email: req.body.email,
     })
 
-    console.log(user,"user")
+    console.log(user, "user")
 
     if (!user) {
         return res.json({ status: 'error', error: 'Invalid login' })
@@ -43,22 +52,18 @@ router.post("/login", async (req, res)=> {
                 name: user.name,
                 email: user.email,
             },
-            'secret123'
+            process.env.SECRET
         )
 
         return res.json({ status: 'ok', user: token })
     } else {
         return res.json({ status: 'error', user: false })
     }
-})
+}
 
-
-router.get("/profile", async (req, res)=>  {
-    const token = req.headers['x-access-token']
-
+const getProfile = async (req, res) => {
     try {
-        const decoded = jwt.verify(token, 'secret123')
-        const email = decoded.email
+        const email = req.user.email
         const user = await User.findOne({ email: email })
 
         return res.json({ status: 'ok', name: user.name, email: user.email })
@@ -66,15 +71,11 @@ router.get("/profile", async (req, res)=>  {
         console.log(error)
         res.json({ status: 'error', error: 'invalid token' })
     }
-})
+}
 
-router.post("/profile", async (req, res)=> {
-    const token = req.headers['x-access-token']
-    console.log("Body", req.body)
-
+const updateProfile = async (req, res) => {
     try {
-        const decoded = jwt.verify(token, 'secret123')
-        const email = decoded.email
+        const email = req.user.email
         await User.updateOne(
             { email: email },
             { $set: { name: req.body.name } }
@@ -85,6 +86,6 @@ router.post("/profile", async (req, res)=> {
         console.log(error)
         res.json({ status: 'error', error: 'invalid token' })
     }
-})
+}
 
-module.exports =router;
+module.exports = { register, login, getProfile, updateProfile };

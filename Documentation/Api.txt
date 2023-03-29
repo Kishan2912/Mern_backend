@@ -1,0 +1,110 @@
+API Documentation for User Authentication and Profile Management
+
+Introduction:
+
+This API allows users to register, login, and manage their profiles. The authentication mechanism used is JSON Web Tokens (JWT).
+
+Base URL:
+
+The base URL for this API is http://43.205.191.63//api.
+
+Authentication:
+
+All endpoints require authentication using a JWT. To authenticate, add a header to your requests with key 'x-access-token' and the token as the value.
+
+Error Responses:
+
+All error responses include a 'status' field, which will have a value of 'error', and an 'error' field with a description of the error.
+
+Endpoints:
+
+1. Register:
+POST /register
+
+Description: Allows a user to create a new account.
+
+Request Body:
+{
+    "name": "John Doe",
+    "email": "johndoe@example.com",
+    "password": "password123",
+}
+
+{
+    "name": "John Doe",
+    "email": "johndoe@example.com",
+    "password": "password123"
+}
+
+2. Login:
+POST /login
+
+Description: Allows a user to login and get a JWT.
+
+Request Body:
+
+{
+    "email": "johndoe@example.com",
+    "password": "password123"
+}
+Response Body:
+
+On success:
+{
+    "status": "ok",
+    "user": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2MTg0MDIwODksImV4cCI6MTYxODQwNTY4OSwibmFtZSI6IkpvaG4gRG9lIiwiZW1haWwiOiJqb2huZG9lQGV4YW1wbGUuY29tIn0.NZ58iLR5V5RYunKvC1VWQTp8oX7DYu-JRPLBv7StWg"
+}
+
+On failure (if the email or password is incorrect):
+{
+    "status": "error",
+    "error": "Invalid login"
+}
+
+3. View Profile:
+GET /profile
+
+Description: Allows a user to view their profile information.
+
+Response Body:
+
+On success:
+{
+    "status": "ok",
+    "name": "John Doe",
+    "email": "johndoe@example.com"
+}
+
+On failure (if the JWT is invalid):
+{
+    "status": "error",
+    "error": "invalid token"
+}
+
+4. Update Profile:
+POST /profile
+
+Description: Allows a user to update their profile information.
+
+Request Body:
+
+{
+    "name": "Jane Doe"
+}
+
+Response Body:
+
+On success:
+
+{
+    "status": "ok"
+}
+
+On failure (if the JWT is invalid):
+{
+    "status": "error",
+    "error": "invalid token"
+}
+
+
+
