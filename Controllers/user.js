@@ -52,7 +52,7 @@ const login = async (req, res) => {
                 name: user.name,
                 email: user.email,
             },
-            process.env.SECRET
+            'secret123'
         )
 
         return res.json({ status: 'ok', user: token })
