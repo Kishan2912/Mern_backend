@@ -27,6 +27,6 @@ app.get("*", (req, res) =>
   )
 );
 
-app.listen(process.env.PORT, () => {
-	console.log(`Server started on ${process.env.PORT}`)
+app.listen(1337, () => {
+	console.log('Server started on 1337')
 })
